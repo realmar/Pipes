@@ -1,4 +1,7 @@
-﻿namespace SomePipes
+﻿using SomePipes.Connector;
+using SomePipes.ProcessStrategies;
+
+namespace SomePipes.Pipe
 {
     public interface IPipe<TIn>
     {

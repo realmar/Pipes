@@ -1,3 +1,7 @@
+using SomePipes.Junctions;
+using SomePipes.Pipe;
+using SomePipes.Processors.Math;
+using SomePipes.Processors.String;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -24,8 +28,8 @@ namespace SomePipes.Test
             var conditionalJunction = new ConditionalPipeJunction<double>(mathPipe, toStringPipe, x => x > 20);
 
             mathPipe.FirstConnector
-                .Connect(new MathExponentiationProcessor(2))
-                .Connect(new MathMultiplicationPipe(10))
+                .Connect(new ExponentiationProcessor(2))
+                .Connect(new MultiplicationPipe(10))
                 .Finish(conditionalJunction.Process);
 
             toStringPipe.FirstConnector

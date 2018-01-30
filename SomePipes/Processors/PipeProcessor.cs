@@ -1,4 +1,4 @@
-﻿namespace SomePipes
+﻿namespace SomePipes.Processors
 {
     public class PipeProcessor<TIn, TOut> : IPipeProcessor<TIn, TOut>
     {

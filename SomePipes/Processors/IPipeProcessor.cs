@@ -1,4 +1,4 @@
-﻿namespace SomePipes
+﻿namespace SomePipes.Processors
 {
     public interface IPipeProcessor<in TIn, out TOut>
     {

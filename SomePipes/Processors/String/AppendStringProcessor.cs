@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SomePipes
+namespace SomePipes.Processors.String
 {
     public class AppendStringProcessor : IPipeProcessor<string, string>
     {

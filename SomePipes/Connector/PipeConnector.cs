@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Reflection;
+using SomePipes.Processors;
 
-namespace SomePipes
+namespace SomePipes.Connector
 {
     public class PipeConnector<TIn> : IPipeConnector<TIn>
     {

@@ -1,6 +1,7 @@
 ﻿using System;
+using SomePipes.Processors;
 
-namespace SomePipes
+namespace SomePipes.Connector
 {
     public interface IPipeConnector<TIn>
     {

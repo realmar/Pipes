@@ -1,6 +1,7 @@
 ﻿using System;
+using SomePipes.Pipe;
 
-namespace SomePipes
+namespace SomePipes.Junctions
 {
     public class ConditionalPipeJunction<TIn> : IPipeJunction<TIn>
     {

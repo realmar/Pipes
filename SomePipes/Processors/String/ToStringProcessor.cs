@@ -1,4 +1,4 @@
-﻿namespace SomePipes
+﻿namespace SomePipes.Processors.String
 {
     public class ToStringProcessor<TIn> : IPipeProcessor<TIn, string>
     {

@@ -1,4 +1,6 @@
-﻿namespace SomePipes
+﻿using SomePipes.Connector;
+
+namespace SomePipes.ProcessStrategies
 {
     public interface IProcessStrategy
     {
