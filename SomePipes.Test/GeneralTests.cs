@@ -42,7 +42,7 @@ namespace SomePipes.Test
             var mathPipe = new Pipe<double>();
             var toStringPipe = new Pipe<double>();
 
-            var conditionalJunction = new ConditionalPipeJunction<double>(mathPipe, toStringPipe, x => x > 20);
+            var conditionalJunction = new ConditionalJunction<double>(mathPipe, toStringPipe, x => x > 20);
 
             mathPipe.FirstConnector
                 .Connect(new ExponentiationProcessor(2))
@@ -74,7 +74,7 @@ namespace SomePipes.Test
                 ProcessStrategy = new ParallelProcessStrategy()
             };
 
-            var junction = new ConditionalPipeJunction<double>(calcPipe, presentationPipe, x => x > 200);
+            var junction = new ConditionalJunction<double>(calcPipe, presentationPipe, x => x > 200);
 
             var stopwatch = new Stopwatch();
 
