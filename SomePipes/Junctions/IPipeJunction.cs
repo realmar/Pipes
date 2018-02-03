@@ -1,7 +1,9 @@
-﻿namespace SomePipes.Junctions
+﻿using System.Collections.Generic;
+
+namespace SomePipes.Junctions
 {
-    public interface IPipeJunction<in TIn>
+    public interface IPipeJunction<TIn>
     {
-        void Process(TIn data);
+        void Process(IList<TIn> data);
     }
 }

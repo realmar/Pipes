@@ -1,35 +1,46 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using SomePipes.Pipe;
 using SomePipes.Processors;
 
 namespace SomePipes.Connector
 {
     public class PipeConnector<TIn> : IPipeConnector<TIn>
     {
-        private delegate void ProcessDelegate(TIn data);
-
         private bool _isFinalProcessor;
-        private Action<TIn> _callback;
-        private ProcessDelegate _processDelegate;
+        private Action<TIn> _processDelegate;
+
+        private readonly IPipeResultReceiver _resultReceiver;
+
+        public PipeConnector(IPipeResultReceiver resultReceiver)
+        {
+            _resultReceiver = resultReceiver;
+        }
 
         public IPipeConnector<TOut> Connect<TOut>(IPipeProcessor<TIn, TOut> processor)
         {
-            var connector = new PipeConnector<TOut>();
+            var connector = new PipeConnector<TOut>(_resultReceiver);
             _processDelegate = data => connector.Process(processor.Process(data));
 
             return connector;
         }
 
-        public void Finish(Action<TIn> callback)
+        public void Finish(Action<IList<TIn>> callback)
         {
             _isFinalProcessor = true;
-            _callback = callback;
+            _resultReceiver.Callback = objects =>
+            {
+                var typedList = new List<TIn>(objects.Cast<TIn>());
+                callback(typedList);
+            };
         }
 
         public void Process(TIn data)
         {
             if (_isFinalProcessor)
             {
-                _callback?.Invoke(data);
+                _resultReceiver.AddResult(data);
             }
             else
             {

@@ -1,10 +1,10 @@
-﻿using SomePipes.Connector;
+﻿using System.Collections.Generic;
+using SomePipes.Pipe;
 
 namespace SomePipes.ProcessStrategies
 {
     public interface IProcessStrategy
     {
-        void Process<TIn>(IPipeConnector<TIn> firstConnector, TIn data);
-        void Process<TIn>(IPipeConnector<TIn> firstConnector, TIn[] data);
+        void Process<TIn>(IPipe<TIn> pipe, IList<TIn> data);
     }
 }

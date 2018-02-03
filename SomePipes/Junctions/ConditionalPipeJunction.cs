@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SomePipes.Pipe;
 
 namespace SomePipes.Junctions
@@ -16,16 +17,25 @@ namespace SomePipes.Junctions
             _predicate = predicate;
         }
 
-        public void Process(TIn data)
+        public void Process(IList<TIn> data)
         {
-            if (_predicate.Invoke(data))
+            var falsePipeData = new List<TIn>();
+            var truePipeData = new List<TIn>();
+
+            foreach (var item in data)
             {
-                _truePipe.Process(data);
+                if (_predicate.Invoke(item))
+                {
+                    truePipeData.Add(item);
+                }
+                else
+                {
+                    falsePipeData.Add(item);
+                }
             }
-            else
-            {
-                _falsePipe.Process(data);
-            }
+
+            if (truePipeData.Count > 0) _truePipe.Process(truePipeData);
+            if (falsePipeData.Count > 0) _falsePipe.Process(falsePipeData);
         }
     }
 }

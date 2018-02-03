@@ -1,12 +1,29 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using SomePipes.Junctions;
 using SomePipes.Pipe;
 using SomePipes.Processors.Math;
+using SomePipes.Processors.Misc;
 using SomePipes.Processors.String;
+using SomePipes.ProcessStrategies;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace SomePipes.Test
 {
+    internal static class ListExtensions
+    {
+        internal static void ForEach<T>(this IList<T> list, Action<T> action)
+        {
+            foreach (var item in list)
+            {
+                action(item);
+            }
+        }
+    }
+
     public class GeneralTests
     {
         private readonly ITestOutputHelper _output;
@@ -36,12 +53,51 @@ namespace SomePipes.Test
                 .Connect(new ToStringProcessor<double>())
                 .Connect(new AppendStringProcessor(() => " is your result"))
                 .Connect(new ToUpperCaseProcessor())
-                .Finish(result => _output.WriteLine(result));
+                .Finish(results => results.ForEach(result => _output.WriteLine(result)));
 
 
             mathPipe.Process(1.1);
 
             Assert.True(true);
+        }
+
+        [Fact]
+        public void ParallelTest()
+        {
+            var calcPipe = new Pipe<double>
+            {
+                ProcessStrategy = new ParallelProcessStrategy()
+            };
+
+            var presentationPipe = new Pipe<double>
+            {
+                ProcessStrategy = new ParallelProcessStrategy()
+            };
+
+            var junction = new ConditionalPipeJunction<double>(calcPipe, presentationPipe, x => x > 200);
+
+            var stopwatch = new Stopwatch();
+
+            calcPipe.FirstConnector
+                .Connect(new WaitProcessor<double>(500))
+                .Connect(new MultiplicationPipe(10))
+                .Finish(junction.Process);
+
+            presentationPipe.FirstConnector
+                .Connect(new ToStringProcessor<double>())
+                .Connect(new AppendStringProcessor(() => " here you go"))
+                .Connect(new ToUpperCaseProcessor())
+                .Finish(results => results.ForEach(result => _output.WriteLine(result.ToString())));
+
+            var data = Enumerable.Range(1, 10)
+                .Select(x => (double)x)
+                .ToArray();
+
+            stopwatch.Start();
+            calcPipe.Process(data);
+            stopwatch.Stop();
+
+            _output.WriteLine("Elapsed Time Parallel: " + stopwatch.Elapsed.TotalMilliseconds);
         }
     }
 }
