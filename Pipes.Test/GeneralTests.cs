@@ -45,7 +45,7 @@ namespace Realmar.Pipes.Test
 
             mathPipe.FirstConnector
                 .Connect(new ExponentiationProcessor(2))
-                .Connect(new MultiplicationPipe(10))
+                .Connect(new MultiplicationProcessor(10))
                 .Finish(conditionalJunction.Process);
 
             toStringPipe.FirstConnector
@@ -79,7 +79,7 @@ namespace Realmar.Pipes.Test
 
             calcPipe.FirstConnector
                 .Connect(new WaitProcessor<double>(500))
-                .Connect(new MultiplicationPipe(10))
+                .Connect(new MultiplicationProcessor(10))
                 .Finish(junction.Process);
 
             presentationPipe.FirstConnector

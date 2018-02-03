@@ -1,10 +1,10 @@
 ﻿namespace Realmar.Pipes.Processors.Math
 {
-    public class MultiplicationPipe : IPipeProcessor<double, double>
+    public class MultiplicationProcessor : IPipeProcessor<double, double>
     {
         private readonly double _multiplicator;
 
-        public MultiplicationPipe(double multiplicator)
+        public MultiplicationProcessor(double multiplicator)
         {
             _multiplicator = multiplicator;
         }
