@@ -54,7 +54,6 @@ namespace Realmar.Pipes.Test
                 .Connect(new ToUpperCaseProcessor())
                 .Finish(results => results.ForEach(result => _output.WriteLine(result)));
 
-
             mathPipe.Process(1.1);
 
             Assert.True(true);
