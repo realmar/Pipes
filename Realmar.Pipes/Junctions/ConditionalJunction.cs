@@ -9,10 +9,10 @@ namespace Realmar.Pipes.Junctions
         private readonly IPipe<TIn> _truePipe;
         private readonly IPipe<TIn> _falsePipe;
 
-        public ConditionalJunction(IPipe<TIn> falsePipe, IPipe<TIn> truePipe, Predicate<TIn> predicate)
+        public ConditionalJunction(IPipe<TIn> truePipe, IPipe<TIn> falsePipe, Predicate<TIn> predicate)
         {
-            _truePipe = truePipe;
             _falsePipe = falsePipe;
+            _truePipe = truePipe;
             _predicate = predicate;
         }
 

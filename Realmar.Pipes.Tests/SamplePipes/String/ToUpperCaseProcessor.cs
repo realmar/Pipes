@@ -1,4 +1,6 @@
-﻿namespace Realmar.Pipes.Processors.String
+﻿using Realmar.Pipes.Processors;
+
+namespace Realmar.Pipes.Tests.SampleProcessors.Processors.String
 {
     public class ToUpperCaseProcessor : IPipeProcessor<string, string>
     {

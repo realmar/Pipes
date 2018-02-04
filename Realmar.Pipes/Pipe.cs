@@ -8,25 +8,27 @@ namespace Realmar.Pipes
 {
     public class Pipe<TIn> : IPipe<TIn>
     {
-        public IProcessStrategy ProcessStrategy { get; set; }
         public IPipeConnector<TIn> FirstConnector { get; }
         public Action<IList<object>> Callback { private get; set; }
 
+        private readonly IProcessStrategy _processStrategy;
         private IList<object> _results;
         private readonly Mutex _mutex;
 
-        public Pipe()
+        public Pipe(IProcessStrategy strategy)
         {
-            ProcessStrategy = new SerialProcessStrategy();
+            _processStrategy = strategy;
             FirstConnector = new PipeConnector<TIn>(this);
 
             _mutex = new Mutex();
             _results = new List<object>();
         }
 
+        public Pipe() : this(new SerialProcessStrategy()) { }
+
         public void Process(IList<TIn> data)
         {
-            ProcessStrategy.Process(this, data);
+            _processStrategy.Process(this, data);
 
             var results = _results;
             _results = new List<object>();
