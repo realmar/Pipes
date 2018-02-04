@@ -14,4 +14,4 @@ build_script:
   - cmd: dotnet --version
   - cmd: cd ./Realmar.Pipes.Tests
   - cmd: dotnet restore
-  - cmd: dotnet tests
+  - cmd: dotnet xunit
