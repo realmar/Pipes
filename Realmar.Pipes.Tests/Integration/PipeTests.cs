@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Realmar.Pipes.Tests.Integration
 {
-    public class PipeFixture
+    public class PipeTests
     {
         private class Base { }
         private class Derived : Base { }
