@@ -10,6 +10,7 @@ using Realmar.Pipes.Tests.SamplePipes.Misc;
 using Realmar.Pipes.Tests.SampleProcessors.Math;
 using Realmar.Pipes.Tests.SampleProcessors.String;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Realmar.Pipes.Tests.Integration
 {
@@ -17,6 +18,13 @@ namespace Realmar.Pipes.Tests.Integration
     {
         private class Base { }
         private class Derived : Base { }
+
+        private ITestOutputHelper _output;
+
+        public PipeTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
 
         [Theory]
         [InlineData(1, 20)]
@@ -86,6 +94,7 @@ namespace Realmar.Pipes.Tests.Integration
         public void Process_Parallel()
         {
             var waitTime = 500;
+            var data = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 };
 
             var pipe = new Pipe<int>(new ParallelProcessStrategy());
             pipe.FirstConnector
@@ -95,10 +104,12 @@ namespace Realmar.Pipes.Tests.Integration
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            pipe.Process(new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 });
+            pipe.Process(data);
 
             stopwatch.Stop();
-            Assert.True(stopwatch.Elapsed.TotalMilliseconds < waitTime * 1.1);
+
+            _output.WriteLine("Process_Parallel time: " + stopwatch.Elapsed.TotalMilliseconds);
+            Assert.True(stopwatch.Elapsed.TotalMilliseconds < waitTime * data.Count / 2);
         }
 
         [Fact]
