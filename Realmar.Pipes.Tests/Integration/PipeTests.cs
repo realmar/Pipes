@@ -110,42 +110,35 @@ namespace Realmar.Pipes.Tests.Integration
             var pipe1 = new Pipe<int>(new ParallelProcessStrategy());
             var pipe2 = new Pipe<int>(new ParallelProcessStrategy());
 
-            var thisThreadId = Thread.CurrentThread.ManagedThreadId;
-            var stopwatch = new Stopwatch();
-
-            Action<IList<int>> assertionsAction = results =>
-            {
-                stopwatch.Stop();
-
-                // Check if we are running in the same thread as we started
-                Assert.Equal(thisThreadId, Thread.CurrentThread.ManagedThreadId);
-                Assert.True(stopwatch.Elapsed.TotalMilliseconds < waitTime * 1.1);
-                Assert.Equal(results.Count, data.Count);
-                foreach (var d in data)
-                {
-                    Assert.True(results.Contains(d));
-                }
-            };
+            var startingThreadId = Thread.CurrentThread.ManagedThreadId;
 
             pipe1.FirstConnector
+                .Connect(new DebugProcessor<int, int>(x =>
+                {
+                    Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, startingThreadId);
+                    return x;
+                }))
                 .Connect(new WaitProcessor<int>(waitTime))
                 .Finish(results =>
                 {
-                    assertionsAction.Invoke(results);
-
-                    stopwatch = new Stopwatch();
-                    stopwatch.Start();
+                    Assert.Equal(startingThreadId, Thread.CurrentThread.ManagedThreadId);
+                    Assert.Equal(data.Count, results.Count);
                     pipe2.Process(data);
                 });
 
             pipe2.FirstConnector
+                .Connect(new DebugProcessor<int, int>(x =>
+                {
+                    Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, startingThreadId);
+                    return x;
+                }))
                 .Connect(new WaitProcessor<int>(waitTime))
                 .Finish(results =>
                 {
-                    assertionsAction.Invoke(results);
+                    Assert.Equal(startingThreadId, Thread.CurrentThread.ManagedThreadId);
+                    Assert.Equal(data.Count, results.Count);
                 });
 
-            stopwatch.Start();
             pipe1.Process(data);
 
         }
