@@ -7,8 +7,8 @@ using Realmar.Pipes.Junctions;
 using Realmar.Pipes.Processors.Misc;
 using Realmar.Pipes.ProcessStrategies;
 using Realmar.Pipes.Tests.SamplePipes.Misc;
-using Realmar.Pipes.Tests.SampleProcessors.Processors.Math;
-using Realmar.Pipes.Tests.SampleProcessors.Processors.String;
+using Realmar.Pipes.Tests.SampleProcessors.Math;
+using Realmar.Pipes.Tests.SampleProcessors.String;
 using Xunit;
 
 namespace Realmar.Pipes.Tests.Integration

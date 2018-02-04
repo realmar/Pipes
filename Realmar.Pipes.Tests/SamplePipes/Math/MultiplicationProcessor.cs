@@ -1,6 +1,6 @@
 ﻿using Realmar.Pipes.Processors;
 
-namespace Realmar.Pipes.Tests.SampleProcessors.Processors.Math
+namespace Realmar.Pipes.Tests.SampleProcessors.Math
 {
     public class MultiplicationProcessor : IPipeProcessor<double, double>
     {
