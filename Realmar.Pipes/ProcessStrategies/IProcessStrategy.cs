@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using Realmar.Pipes.Connector;
 
 namespace Realmar.Pipes.ProcessStrategies
 {
     public interface IProcessStrategy
     {
-        void Process<TIn>(IPipe<TIn> pipe, IList<TIn> data);
+        void Process<TIn>(IPipeConnector<TIn> pipeConnector, IList<TIn> data);
     }
 }
