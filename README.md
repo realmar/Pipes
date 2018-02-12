@@ -1,4 +1,5 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/riipy6srh0b2im01/branch/master?svg=true)](https://ci.appveyor.com/project/realmar/pipes/branch/master)
+[![Build Status](https://travis-ci.org/realmar/Pipes.svg?branch=master)](https://travis-ci.org/realmar/Pipes)
 [![codecov](https://codecov.io/gh/realmar/Pipes/branch/master/graph/badge.svg)](https://codecov.io/gh/realmar/Pipes)
 
 # Pipes
