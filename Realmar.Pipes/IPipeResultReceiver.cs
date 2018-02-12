@@ -1,11 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using Realmar.Pipes.Processors;
 
 namespace Realmar.Pipes
 {
-    public interface IPipeResultReceiver
-    {
-        Action<IList<object>> Callback { set; }
-        void AddResult(object result);
-    }
+	/// <summary>
+	/// The IPipeResultReceiver interface.
+	/// Receives the processed data of the last <see cref="IPipeProcessor{TIn,TOut}"/> in the chain.
+	/// </summary>
+	public interface IPipeResultReceiver
+	{
+		/// <summary>
+		/// Sets the callback which is invoked by an
+		/// <see cref="IPipe{TIn}"/> after processing the input data.
+		/// </summary>
+		/// <value>
+		/// The callback.
+		/// </value>
+		Action<IList<object>> Callback { set; }
+
+		/// <summary>
+		/// Adds the final result after processing the data.
+		/// </summary>
+		/// <param name="result">The result.</param>
+		void AddResult(object result);
+	}
 }
