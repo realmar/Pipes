@@ -1,0 +1,8 @@
+language: csharp
+solution: Pipes.sln
+mono: none
+dotnet: 2.1.4
+script:
+  - cd Realmar.Pipes.Tests
+  - dotnet restore
+  - dotnet xunit
