@@ -2,9 +2,16 @@ image: Visual Studio 2017
 
 init:
   - cmd: git config --global core.autocrlf true
+  - cmd: dotnet --version
+
+before_build:
+  - cmd: choco install -y opencover.portable
+  - cmd: choco install -y codecov
 
 build_script:
-  - cmd: dotnet --version
   - cmd: cd ./Realmar.Pipes.Tests
   - cmd: dotnet restore
-  - cmd: dotnet xunit
+
+test_script:
+  - cmd: OpenCover.Console.exe -register:user -target:"dotnet.exe" -targetargs:"xunit" -filter:"+[*]* -[*.Tests]*" -output:"..\Realmar.Pipes_coverage.xml" -oldstyle
+  - cmd: codecov -f "..\Realmar.Pipes_coverage.xml"

@@ -5,6 +5,7 @@
     <RuntimeFrameworkVersion>2.0.5</RuntimeFrameworkVersion>
 
     <IsPackable>false</IsPackable>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
