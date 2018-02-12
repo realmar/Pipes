@@ -9,7 +9,6 @@ namespace Realmar.Pipes.ProcessStrategies
 		public void Process<TIn>(IPipeConnector<TIn> pipeConnector, IList<TIn> data)
 		{
 			Parallel.ForEach(data, pipeConnector.Process);
-
 		}
 	}
 }
