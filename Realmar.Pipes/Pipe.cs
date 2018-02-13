@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Realmar.Pipes.Connector;
+using Realmar.Pipes.Connectors;
 using Realmar.Pipes.ProcessStrategies;
 
 namespace Realmar.Pipes
@@ -9,7 +9,7 @@ namespace Realmar.Pipes
 	/// <inheritdoc />
 	public class Pipe<TIn> : IPipe<TIn>
 	{
-		public IPipeConnector<TIn> FirstConnector { get; }
+		public IProcessorConnector<TIn> FirstConnector { get; }
 		public Action<IList<object>> Callback { private get; set; }
 		public static readonly IProcessStrategy DefaultProcessStrategy = new SerialProcessStrategy();
 
@@ -24,7 +24,7 @@ namespace Realmar.Pipes
 		public Pipe(IProcessStrategy strategy)
 		{
 			_processStrategy = strategy;
-			FirstConnector = new PipeConnector<TIn>(this);
+			FirstConnector = new ProcessorConnector<TIn>(this);
 
 			_mutex = new Mutex();
 			_results = new List<object>();

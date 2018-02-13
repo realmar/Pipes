@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Realmar.Pipes.Connector;
+using Realmar.Pipes.Connectors;
 
 namespace Realmar.Pipes.ProcessStrategies
 {
@@ -12,9 +12,9 @@ namespace Realmar.Pipes.ProcessStrategies
 	public class ParallelProcessStrategy : IProcessStrategy
 	{
 		/// <inheritdoc />
-		public void Process<TIn>(IPipeConnector<TIn> pipeConnector, IList<TIn> data)
+		public void Process<TIn>(IProcessorConnector<TIn> processorConnector, IList<TIn> data)
 		{
-			Parallel.ForEach(data, pipeConnector.Process);
+			Parallel.ForEach(data, processorConnector.Process);
 		}
 	}
 }

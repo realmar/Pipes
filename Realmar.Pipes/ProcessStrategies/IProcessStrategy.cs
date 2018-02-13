@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Realmar.Pipes.Connector;
+using Realmar.Pipes.Connectors;
 
 namespace Realmar.Pipes.ProcessStrategies
 {
@@ -13,8 +13,8 @@ namespace Realmar.Pipes.ProcessStrategies
 		/// Processes the specified data using a pipe connector as starting point.
 		/// </summary>
 		/// <typeparam name="TIn">The type of the input data.</typeparam>
-		/// <param name="pipeConnector">The pipe connector.</param>
+		/// <param name="processorConnector">The pipe connector.</param>
 		/// <param name="data">The data.</param>
-		void Process<TIn>(IPipeConnector<TIn> pipeConnector, IList<TIn> data);
+		void Process<TIn>(IProcessorConnector<TIn> processorConnector, IList<TIn> data);
 	}
 }

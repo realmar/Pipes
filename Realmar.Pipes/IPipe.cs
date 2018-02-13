@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Realmar.Pipes.Connector;
+using Realmar.Pipes.Connectors;
 using Realmar.Pipes.Processors;
 
 namespace Realmar.Pipes
@@ -18,7 +18,7 @@ namespace Realmar.Pipes
 		/// <value>
 		/// The first connector.
 		/// </value>
-		IPipeConnector<TIn> FirstConnector { get; }
+		IProcessorConnector<TIn> FirstConnector { get; }
 
 		/// <summary>
 		/// Processes the specified data.

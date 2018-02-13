@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace Realmar.Pipes.Junctions
+namespace Realmar.Pipes.Connectors
 {
 	/// <summary>
-	/// The IPipeJunction interface.
+	/// The IPipeConnector interface.
 	/// Connects two or more pipes with each other by taking the output of
 	/// one pipe and giving it as input of another pipe.
 	/// </summary>
 	/// <typeparam name="T">The type of the data.</typeparam>
-	public interface IPipeJunction<T>
+	public interface IPipeConnector<T>
 	{
 		/// <summary>
 		/// Processes the specified data.

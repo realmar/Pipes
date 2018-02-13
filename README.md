@@ -104,13 +104,13 @@ pipe.FirstConnector
 pipe.Process(new Derived());
 ```
 
-### Junctions
+### Pipe Connectors
 
-Junctions are used to pass processed data from a pipe to other pipes. (or a single
+Pipe Connectors are used to pass processed data from a pipe to other pipes. (or a single
 pipe)
 
 This example is taken out of the [tests](Realmar.Pipes.Tests/Integration/PipeTests.cs).
-(Testcase: `Process_ConditionalJunction`) The goal is to multiply a number until it
+(Testcase: `Process_ConditionalPipeConnector`) The goal is to multiply a number until it
 is bigger or equal than 20, then append a string.
 
 ```c#
@@ -118,11 +118,11 @@ var mathPipe = new Pipe<double>();
 var stringPipe = new Pipe<double>();
 
 //                                             false     true        predicate
-var junction = new ConditionalJunction<double>(mathPipe, stringPipe, x => x < 20);
+var connector = new ConditionalPipeConnector<double>(mathPipe, stringPipe, x => x < 20);
 
 mathPipe.FirstConnector
     .Connect(new MultiplicationProcessor(2))        // multiply with 2
-    .Finish(junction.Process);
+    .Finish(connector.Process);
 
 stringPipe.FirstConnector
     .Connect(new ToStringProcessor<double>())
@@ -165,7 +165,7 @@ $ dotnet xunit
 ## Further Work / Ideas
 
 - Add more processors which are useful!
-- Distributed junctions which allow to send the processed data to another computer for further processing
+- Distributed pipe connectors which allow to send the processed data to another computer for further processing
 - Async/await process strategy
 
 ## License

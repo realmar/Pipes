@@ -1,28 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Realmar.Pipes.Junctions
+/// <summary>
+/// 
+/// </summary>
+namespace Realmar.Pipes.Connectors
 {
 	/// <summary>
-	/// The ConditionalJunction class.
+	/// The ConditionalPipeConnector class.
 	/// Takes data as input and uses a predicate to determine to which pipe
 	/// it should give the data for further processing.
 	/// </summary>
 	/// <typeparam name="T">The input data.</typeparam>
-	/// <seealso cref="Realmar.Pipes.Junctions.IPipeJunction{T}" />
-	public class ConditionalJunction<T> : IPipeJunction<T>
+	/// <seealso cref="IPipeConnector{T}" />
+	public class ConditionalPipeConnector<T> : IPipeConnector<T>
 	{
 		private readonly Predicate<T> _predicate;
 		private readonly IPipe<T> _truePipe;
 		private readonly IPipe<T> _falsePipe;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ConditionalJunction{T}"/> class.
+		/// Initializes a new instance of the <see cref="ConditionalPipeConnector{T}"/> class.
 		/// </summary>
 		/// <param name="truePipe">The pipe used when the predicate returns true.</param>
 		/// <param name="falsePipe">The pipe used when the predicate returns false.</param>
 		/// <param name="predicate">The predicate used to determine to which pipe the data is given.</param>
-		public ConditionalJunction(IPipe<T> truePipe, IPipe<T> falsePipe, Predicate<T> predicate)
+		public ConditionalPipeConnector(IPipe<T> truePipe, IPipe<T> falsePipe, Predicate<T> predicate)
 		{
 			_falsePipe = falsePipe;
 			_truePipe = truePipe;

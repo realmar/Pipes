@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Realmar.Pipes.Connector;
+using Realmar.Pipes.Connectors;
 
 namespace Realmar.Pipes.ProcessStrategies
 {
@@ -11,11 +11,11 @@ namespace Realmar.Pipes.ProcessStrategies
 	public class SerialProcessStrategy : IProcessStrategy
 	{
 		/// <inheritdoc />
-		public void Process<TIn>(IPipeConnector<TIn> pipeConnector, IList<TIn> data)
+		public void Process<TIn>(IProcessorConnector<TIn> processorConnector, IList<TIn> data)
 		{
 			foreach (var item in data)
 			{
-				pipeConnector.Process(item);
+				processorConnector.Process(item);
 			}
 		}
 	}

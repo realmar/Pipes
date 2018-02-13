@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Realmar.Pipes.Processors;
 
-namespace Realmar.Pipes.Connector
+namespace Realmar.Pipes.Connectors
 {
 	/// <inheritdoc />
-	public class PipeConnector<TIn> : IPipeConnector<TIn>
+	public class ProcessorConnector<TIn> : IProcessorConnector<TIn>
 	{
 		private bool _isFinalProcessor;
 		private Action<TIn> _processDelegate;
@@ -14,18 +14,18 @@ namespace Realmar.Pipes.Connector
 		private readonly IPipeResultReceiver _resultReceiver;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PipeConnector{TIn}"/> class.
+		/// Initializes a new instance of the <see cref="ProcessorConnector{TIn}"/> class.
 		/// </summary>
 		/// <param name="resultReceiver">The receiver of the processed data.</param>
-		public PipeConnector(IPipeResultReceiver resultReceiver)
+		public ProcessorConnector(IPipeResultReceiver resultReceiver)
 		{
 			_resultReceiver = resultReceiver;
 		}
 
 		/// <inheritdoc />
-		public IPipeConnector<TOut> Connect<TOut>(IPipeProcessor<TIn, TOut> processor)
+		public IProcessorConnector<TOut> Connect<TOut>(IPipeProcessor<TIn, TOut> processor)
 		{
-			var connector = new PipeConnector<TOut>(_resultReceiver);
+			var connector = new ProcessorConnector<TOut>(_resultReceiver);
 			_processDelegate = data => connector.Process(processor.Process(data));
 
 			return connector;

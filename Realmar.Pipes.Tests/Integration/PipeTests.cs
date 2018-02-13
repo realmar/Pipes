@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using Realmar.Pipes.Junctions;
+using Realmar.Pipes.Connectors;
 using Realmar.Pipes.Processors.Misc;
 using Realmar.Pipes.ProcessStrategies;
 using Realmar.Pipes.Tests.SamplePipes.Misc;
@@ -133,19 +133,19 @@ namespace Realmar.Pipes.Tests.Integration
 		}
 
 		[Fact]
-		public void Process_ConditionalJunction()
+		public void Process_ConditionalPipeConnector()
 		{
 			var appendStr = " is your number!";
 
 			var mathPipe = new Pipe<double>();
 			var stringPipe = new Pipe<double>();
 
-			var junction = new ConditionalJunction<double>(mathPipe, stringPipe, x => x < 20);
+			var connector = new ConditionalPipeConnector<double>(mathPipe, stringPipe, x => x < 20);
 
 			mathPipe.FirstConnector
 				.Connect(new AssertionProcessor<double>(x => Assert.True(x < 20)))
 				.Connect(new MultiplicationProcessor(2))
-				.Finish(junction.Process);
+				.Finish(connector.Process);
 
 			stringPipe.FirstConnector
 				.Connect(new AssertionProcessor<double>(x => Assert.True(x >= 20)))
