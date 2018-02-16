@@ -20,6 +20,7 @@ namespace Realmar.Pipes
 
 		private readonly List<TIn> _processingData;
 
+		private readonly object _addResultLock;
 		private bool _isDisposed;
 
 		/// <summary>
@@ -28,6 +29,7 @@ namespace Realmar.Pipes
 		/// <param name="strategy">The strategy used to process the data.</param>
 		public NonBlockingPipe(IProcessStrategy strategy) : base(strategy)
 		{
+			_addResultLock = new object();
 			_processingData = new List<TIn>();
 			_waitHandle = new AutoResetEvent(false);
 			_workerThread = new Thread(ThreadRunner);
@@ -49,7 +51,7 @@ namespace Realmar.Pipes
 		/// <exception cref="ObjectDisposedException">The <see cref="M:System.Threading.WaitHandle.Close"></see> method was previously called on this <see cref="T:System.Threading.EventWaitHandle"></see>.</exception>
 		public override void Process(IList<TIn> data)
 		{
-			_processingData.AddRange(data);
+			lock (_addResultLock) _processingData.AddRange(data);
 			_waitHandle.Set();
 		}
 
@@ -68,7 +70,8 @@ namespace Realmar.Pipes
 			{
 				_waitHandle.WaitOne();
 
-				if (_processingData.Count > 0)
+				if (_processingData.Count.Equals(0)) continue;
+				lock (_addResultLock)
 				{
 					ProcessStrategy.Process(FirstConnector, _processingData);
 					_processingData.Clear();

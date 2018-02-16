@@ -14,10 +14,9 @@ namespace Realmar.Pipes
 
 		private readonly IProcessStrategy _processStrategy;
 		private IList<object> _results;
-		private readonly Mutex _mutex;
+		private readonly object _lock;
 
 		protected IProcessStrategy ProcessStrategy => _processStrategy;
-		protected Mutex Mutex => _mutex;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Pipe{TIn}"/> class.
@@ -28,7 +27,7 @@ namespace Realmar.Pipes
 			_processStrategy = strategy;
 			FirstConnector = new ProcessorConnector<TIn>(this);
 
-			_mutex = new Mutex();
+			_lock = new Mutex();
 			_results = new List<object>();
 		}
 
@@ -60,7 +59,7 @@ namespace Realmar.Pipes
 		/// <inheritdoc />
 		public virtual void AddResult(object result)
 		{
-			lock (_mutex)
+			lock (_lock)
 			{
 				_results.Add(result);
 			}
