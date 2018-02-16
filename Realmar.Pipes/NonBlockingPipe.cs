@@ -18,7 +18,7 @@ namespace Realmar.Pipes
 		private Thread _workerThread;
 		private readonly EventWaitHandle _waitHandle;
 
-		private readonly List<TIn> _processingData;
+		private readonly List<TIn> _scheduledData;
 
 		private readonly object _addResultLock;
 		private bool _isDisposed;
@@ -30,7 +30,7 @@ namespace Realmar.Pipes
 		public NonBlockingPipe(IProcessStrategy strategy) : base(strategy)
 		{
 			_addResultLock = new object();
-			_processingData = new List<TIn>();
+			_scheduledData = new List<TIn>();
 			_waitHandle = new AutoResetEvent(false);
 			_workerThread = new Thread(ThreadRunner);
 			_workerThread.Start();
@@ -51,7 +51,7 @@ namespace Realmar.Pipes
 		/// <exception cref="ObjectDisposedException">The <see cref="M:System.Threading.WaitHandle.Close"></see> method was previously called on this <see cref="T:System.Threading.EventWaitHandle"></see>.</exception>
 		public override void Process(IList<TIn> data)
 		{
-			lock (_addResultLock) _processingData.AddRange(data);
+			lock (_addResultLock) _scheduledData.AddRange(data);
 			_waitHandle.Set();
 		}
 
@@ -70,11 +70,11 @@ namespace Realmar.Pipes
 			{
 				_waitHandle.WaitOne();
 
-				if (_processingData.Count.Equals(0)) continue;
+				if (_scheduledData.Count.Equals(0)) continue;
 				lock (_addResultLock)
 				{
-					ProcessStrategy.Process(FirstConnector, _processingData);
-					_processingData.Clear();
+					ProcessStrategy.Process(FirstConnector, _scheduledData);
+					_scheduledData.Clear();
 				}
 			}
 		}
