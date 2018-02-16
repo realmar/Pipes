@@ -5,10 +5,10 @@ using Realmar.Pipes.Processors;
 namespace Realmar.Pipes
 {
 	/// <summary>
-	/// The IPipeResultReceiver interface.
+	/// The IResultReceiver interface.
 	/// Receives the processed data of the last <see cref="IPipeProcessor{TIn,TOut}"/> in the chain.
 	/// </summary>
-	public interface IPipeResultReceiver
+	public interface IResultReceiver
 	{
 		/// <summary>
 		/// Sets the callback which is invoked by an

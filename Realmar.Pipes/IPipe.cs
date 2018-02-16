@@ -9,8 +9,8 @@ namespace Realmar.Pipes
 	/// Represents a pipe which processes data using a set of <see cref="IPipeProcessor{TIn,TOut}"/>s.
 	/// </summary>
 	/// <typeparam name="TIn">The type of the input data.</typeparam>
-	/// <seealso cref="Realmar.Pipes.IPipeResultReceiver" />
-	public interface IPipe<TIn> : IPipeResultReceiver
+	/// <seealso cref="IResultReceiver" />
+	public interface IPipe<TIn> : IResultReceiver
 	{
 		/// <summary>
 		/// Gets the first connector.

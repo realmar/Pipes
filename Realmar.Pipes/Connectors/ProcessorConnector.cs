@@ -11,13 +11,13 @@ namespace Realmar.Pipes.Connectors
 		private bool _isFinalProcessor;
 		private Action<TIn> _processDelegate;
 
-		private readonly IPipeResultReceiver _resultReceiver;
+		private readonly IResultReceiver _resultReceiver;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProcessorConnector{TIn}"/> class.
 		/// </summary>
 		/// <param name="resultReceiver">The receiver of the processed data.</param>
-		public ProcessorConnector(IPipeResultReceiver resultReceiver)
+		public ProcessorConnector(IResultReceiver resultReceiver)
 		{
 			_resultReceiver = resultReceiver;
 		}
@@ -38,7 +38,7 @@ namespace Realmar.Pipes.Connectors
 			_resultReceiver.Callback = objects =>
 			{
 				var typedList = new List<TIn>(objects.Cast<TIn>());
-				callback(typedList);
+				callback.Invoke(typedList);
 			};
 		}
 

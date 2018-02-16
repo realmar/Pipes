@@ -10,12 +10,14 @@ namespace Realmar.Pipes
 	public class Pipe<TIn> : IPipe<TIn>
 	{
 		public IProcessorConnector<TIn> FirstConnector { get; }
-		public Action<IList<object>> Callback { private get; set; }
-		public static readonly IProcessStrategy DefaultProcessStrategy = new SerialProcessStrategy();
+		public Action<IList<object>> Callback { protected get; set; }
 
 		private readonly IProcessStrategy _processStrategy;
 		private IList<object> _results;
 		private readonly Mutex _mutex;
+
+		protected IProcessStrategy ProcessStrategy => _processStrategy;
+		protected Mutex Mutex => _mutex;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Pipe{TIn}"/> class.
@@ -32,12 +34,12 @@ namespace Realmar.Pipes
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Pipe{TIn}"/> class
-		/// using the <see cref="DefaultProcessStrategy"/>.
+		/// using the <see cref="SerialProcessStrategy"/> strategy.
 		/// </summary>
-		public Pipe() : this(DefaultProcessStrategy) { }
+		public Pipe() : this(new SerialProcessStrategy()) { }
 
 		/// <inheritdoc />
-		public void Process(IList<TIn> data)
+		public virtual void Process(IList<TIn> data)
 		{
 			_processStrategy.Process(FirstConnector, data);
 
@@ -56,7 +58,7 @@ namespace Realmar.Pipes
 		}
 
 		/// <inheritdoc />
-		public void AddResult(object result)
+		public virtual void AddResult(object result)
 		{
 			lock (_mutex)
 			{
