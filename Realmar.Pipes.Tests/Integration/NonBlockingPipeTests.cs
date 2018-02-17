@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using Realmar.Pipes.Connectors;
 using Realmar.Pipes.Processors.Misc;
 using Realmar.Pipes.Tests.SamplePipes.Misc;
 using Realmar.Pipes.Tests.SampleProcessors.Math;
+using Realmar.Pipes.Tests.SampleProcessors.String;
 using Xunit;
 
 namespace Realmar.Pipes.Tests.Integration
@@ -101,6 +103,42 @@ namespace Realmar.Pipes.Tests.Integration
 				Assert.Equal(8, processedData.Count);
 				for (var i = 0; i < 8; i++)
 					Assert.Contains(i * 2 * 2, processedData);
+			}
+		}
+
+		[Fact]
+		public void Process_ConditionalPipeConnector()
+		{
+			using (var mathPipe = new NonBlockingPipe<double>())
+			using (var stringPipe = new NonBlockingPipe<double>())
+			{
+				var appendStr = " is your number!";
+
+				var connector = new ConditionalPipeConnector<double>(mathPipe, stringPipe, x => x < 20);
+
+				mathPipe.FirstConnector
+					.Connect(new AssertionProcessor<double>(x => Assert.True(x < 20)))
+					.Connect(new MultiplicationProcessor(2))
+					.Finish(results =>
+					{
+						Assert.Equal(1, results.Count);
+						connector.Process(results);
+					});
+
+				stringPipe.FirstConnector
+					.Connect(new AssertionProcessor<double>(x => Assert.True(x >= 20)))
+					.Connect(new ToStringProcessor<double>())
+					.Connect(new AppendStringProcessor(appendStr))
+					.Finish(results =>
+					{
+						Assert.Equal(1, results.Count);
+						Assert.EndsWith(appendStr, results[0]);
+					});
+
+				// Same issue as above
+				Thread.Sleep(2000);
+
+				mathPipe.Process(new List<double> { 1, 2, 3, 4, 5, 6 });
 			}
 		}
 	}

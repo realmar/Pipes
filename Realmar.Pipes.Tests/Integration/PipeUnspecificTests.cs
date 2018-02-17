@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using Realmar.Pipes.Connectors;
 using Realmar.Pipes.Tests.SamplePipes.Misc;
 using Realmar.Pipes.Tests.SampleProcessors.Math;
 using Realmar.Pipes.Tests.SampleProcessors.String;
@@ -83,85 +81,6 @@ namespace Realmar.Pipes.Tests.Integration
 
 				waitHandle.WaitOne();
 				DisposePipe(pipe);
-			}
-		}
-
-		[Theory]
-		[InlineData(typeof(Pipe<double>))]
-		[InlineData(typeof(NonBlockingPipe<double>))]
-		public void Process_ListData(Type pipeType)
-		{
-			using (var waitHandle = new AutoResetEvent(false))
-			{
-				var pipe = CreatePipe<double>(pipeType);
-
-				var data = new List<double> { 1d, 2d, 3d, 4d, 5d, 6d };
-				var exponent = 2;
-
-				pipe.FirstConnector
-					.Connect(new ExponentiationProcessor(exponent))
-					.Connect(new ExponentiationProcessor(exponent))
-					.Finish(results =>
-					{
-						Assert.Equal(data.Count, results.Count);
-
-						// Note: this only works because we are executing in serial
-						// otherwise the order of results will not be the same as
-						// in data
-						foreach (var i in Enumerable.Range(0, data.Count))
-						{
-							Assert.Equal(results[i], Math.Pow(data[i], exponent * exponent));
-						}
-
-						waitHandle.Set();
-					});
-
-				pipe.Process(data);
-
-				waitHandle.WaitOne();
-				DisposePipe(pipe);
-			}
-		}
-
-		[Theory]
-		[InlineData(typeof(Pipe<double>))]
-		[InlineData(typeof(NonBlockingPipe<double>))]
-		public void Process_ConditionalPipeConnector(Type pipeType)
-		{
-			using (var waitHandle = new AutoResetEvent(false))
-			{
-				var appendStr = " is your number!";
-
-				var mathPipe = CreatePipe<double>(pipeType);
-				var stringPipe = CreatePipe<double>(pipeType);
-
-				var connector = new ConditionalPipeConnector<double>(mathPipe, stringPipe, x => x < 20);
-
-				mathPipe.FirstConnector
-					.Connect(new AssertionProcessor<double>(x => Assert.True(x < 20)))
-					.Connect(new MultiplicationProcessor(2))
-					.Finish(connector.Process);
-
-				stringPipe.FirstConnector
-					.Connect(new AssertionProcessor<double>(x => Assert.True(x >= 20)))
-					.Connect(new ToStringProcessor<double>())
-					.Connect(new AppendStringProcessor(appendStr))
-					.Finish(results =>
-					{
-						foreach (var result in results)
-						{
-							Assert.EndsWith(appendStr, result);
-						}
-
-						waitHandle.Set();
-					});
-
-				mathPipe.Process(new List<double> { 1, 2, 3, 4, 5, 6 });
-
-				waitHandle.WaitOne();
-
-				DisposePipe(mathPipe);
-				DisposePipe(stringPipe);
 			}
 		}
 
