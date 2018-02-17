@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Realmar.Pipes.Connectors;
 using Realmar.Pipes.Tests.SamplePipes.Misc;
 using Realmar.Pipes.Tests.SampleProcessors.Math;
@@ -21,6 +22,11 @@ namespace Realmar.Pipes.Tests.Integration
 
 		private void DisposePipe(object pipe)
 		{
+			// if it is a none blocking pipe we give it time to finish processing
+			// this is not an optimal solution, see comment in NonBlockingPipeTests.Process_GiveDataContinuously
+			if (pipe.GetType().GetGenericTypeDefinition() == typeof(NonBlockingPipe<>))
+				Thread.Sleep(2000);
+
 			var pipeDisposable = pipe as IDisposable;
 			pipeDisposable?.Dispose();
 		}
