@@ -22,11 +22,6 @@ namespace Realmar.Pipes.Tests.Integration
 
 		private void DisposePipe(object pipe)
 		{
-			// if it is a none blocking pipe we give it time to finish processing
-			// this is not an optimal solution, see comment in NonBlockingPipeTests.Process_GiveDataContinuously
-			if (pipe.GetType().GetGenericTypeDefinition() == typeof(NonBlockingPipe<>))
-				Thread.Sleep(2000);
-
 			var pipeDisposable = pipe as IDisposable;
 			pipeDisposable?.Dispose();
 		}
@@ -38,18 +33,24 @@ namespace Realmar.Pipes.Tests.Integration
 		[InlineData(typeof(NonBlockingPipe<double>), 2, 10)]
 		public void Process_Single_Processor(Type pipeType, double data, double multiplicator)
 		{
-			var pipe = CreatePipe<double>(pipeType);
-			pipe.FirstConnector
-				.Connect(new MultiplicationProcessor(multiplicator))
-				.Finish(results =>
-				{
-					Assert.Equal(1, results.Count);
-					Assert.Equal(results[0], data * multiplicator);
-				});
+			using (var waitHandle = new AutoResetEvent(false))
+			{
+				var pipe = CreatePipe<double>(pipeType);
+				pipe.FirstConnector
+					.Connect(new MultiplicationProcessor(multiplicator))
+					.Finish(results =>
+					{
+						Assert.Equal(1, results.Count);
+						Assert.Equal(results[0], data * multiplicator);
 
-			pipe.Process(new List<double> { data });
+						waitHandle.Set();
+					});
 
-			DisposePipe(pipe);
+				pipe.Process(new List<double> { data });
+
+				waitHandle.WaitOne();
+				DisposePipe(pipe);
+			}
 		}
 
 		[Theory]
@@ -57,26 +58,32 @@ namespace Realmar.Pipes.Tests.Integration
 		[InlineData(typeof(NonBlockingPipe<string>))]
 		public void Process_Multiple_Processors(Type pipeType)
 		{
-			var pipe = CreatePipe<string>(pipeType);
-			Assert.NotNull(pipe);
+			using (var waitHandle = new AutoResetEvent(false))
+			{
+				var pipe = CreatePipe<string>(pipeType);
+				Assert.NotNull(pipe);
 
-			var startStr = "hello world";
-			var str1 = "integration";
-			var str2 = "test";
+				var startStr = "hello world";
+				var str1 = "integration";
+				var str2 = "test";
 
-			pipe.FirstConnector
-				.Connect(new AppendStringProcessor(str1))
-				.Connect(new AppendStringProcessor(str2))
-				.Connect(new ToUpperCaseProcessor())
-				.Finish(results =>
-				{
-					Assert.Equal(1, results.Count);
-					Assert.Equal(results[0], (startStr + str1 + str2).ToUpper());
-				});
+				pipe.FirstConnector
+					.Connect(new AppendStringProcessor(str1))
+					.Connect(new AppendStringProcessor(str2))
+					.Connect(new ToUpperCaseProcessor())
+					.Finish(results =>
+					{
+						Assert.Equal(1, results.Count);
+						Assert.Equal(results[0], (startStr + str1 + str2).ToUpper());
 
-			pipe.Process(new List<string> { startStr });
+						waitHandle.Set();
+					});
 
-			DisposePipe(pipe);
+				pipe.Process(new List<string> { startStr });
+
+				waitHandle.WaitOne();
+				DisposePipe(pipe);
+			}
 		}
 
 		[Theory]
@@ -84,30 +91,36 @@ namespace Realmar.Pipes.Tests.Integration
 		[InlineData(typeof(NonBlockingPipe<double>))]
 		public void Process_ListData(Type pipeType)
 		{
-			var pipe = CreatePipe<double>(pipeType);
+			using (var waitHandle = new AutoResetEvent(false))
+			{
+				var pipe = CreatePipe<double>(pipeType);
 
-			var data = new List<double> { 1d, 2d, 3d, 4d, 5d, 6d };
-			var exponent = 2;
+				var data = new List<double> { 1d, 2d, 3d, 4d, 5d, 6d };
+				var exponent = 2;
 
-			pipe.FirstConnector
-				.Connect(new ExponentiationProcessor(exponent))
-				.Connect(new ExponentiationProcessor(exponent))
-				.Finish(results =>
-				{
-					Assert.Equal(data.Count, results.Count);
-
-					// Note: this only works because we are executing in serial
-					// otherwise the order of results will not be the same as
-					// in data
-					foreach (var i in Enumerable.Range(0, data.Count))
+				pipe.FirstConnector
+					.Connect(new ExponentiationProcessor(exponent))
+					.Connect(new ExponentiationProcessor(exponent))
+					.Finish(results =>
 					{
-						Assert.Equal(results[i], Math.Pow(data[i], exponent * exponent));
-					}
-				});
+						Assert.Equal(data.Count, results.Count);
 
-			pipe.Process(data);
+						// Note: this only works because we are executing in serial
+						// otherwise the order of results will not be the same as
+						// in data
+						foreach (var i in Enumerable.Range(0, data.Count))
+						{
+							Assert.Equal(results[i], Math.Pow(data[i], exponent * exponent));
+						}
 
-			DisposePipe(pipe);
+						waitHandle.Set();
+					});
+
+				pipe.Process(data);
+
+				waitHandle.WaitOne();
+				DisposePipe(pipe);
+			}
 		}
 
 		[Theory]
@@ -115,34 +128,41 @@ namespace Realmar.Pipes.Tests.Integration
 		[InlineData(typeof(NonBlockingPipe<double>))]
 		public void Process_ConditionalPipeConnector(Type pipeType)
 		{
-			var appendStr = " is your number!";
+			using (var waitHandle = new AutoResetEvent(false))
+			{
+				var appendStr = " is your number!";
 
-			var mathPipe = CreatePipe<double>(pipeType);
-			var stringPipe = CreatePipe<double>(pipeType);
+				var mathPipe = CreatePipe<double>(pipeType);
+				var stringPipe = CreatePipe<double>(pipeType);
 
-			var connector = new ConditionalPipeConnector<double>(mathPipe, stringPipe, x => x < 20);
+				var connector = new ConditionalPipeConnector<double>(mathPipe, stringPipe, x => x < 20);
 
-			mathPipe.FirstConnector
-				.Connect(new AssertionProcessor<double>(x => Assert.True(x < 20)))
-				.Connect(new MultiplicationProcessor(2))
-				.Finish(connector.Process);
+				mathPipe.FirstConnector
+					.Connect(new AssertionProcessor<double>(x => Assert.True(x < 20)))
+					.Connect(new MultiplicationProcessor(2))
+					.Finish(connector.Process);
 
-			stringPipe.FirstConnector
-				.Connect(new AssertionProcessor<double>(x => Assert.True(x >= 20)))
-				.Connect(new ToStringProcessor<double>())
-				.Connect(new AppendStringProcessor(appendStr))
-				.Finish(results =>
-				{
-					foreach (var result in results)
+				stringPipe.FirstConnector
+					.Connect(new AssertionProcessor<double>(x => Assert.True(x >= 20)))
+					.Connect(new ToStringProcessor<double>())
+					.Connect(new AppendStringProcessor(appendStr))
+					.Finish(results =>
 					{
-						Assert.EndsWith(appendStr, result);
-					}
-				});
+						foreach (var result in results)
+						{
+							Assert.EndsWith(appendStr, result);
+						}
 
-			mathPipe.Process(new List<double> { 1, 2, 3, 4, 5, 6 });
+						waitHandle.Set();
+					});
 
-			DisposePipe(mathPipe);
-			DisposePipe(stringPipe);
+				mathPipe.Process(new List<double> { 1, 2, 3, 4, 5, 6 });
+
+				waitHandle.WaitOne();
+
+				DisposePipe(mathPipe);
+				DisposePipe(stringPipe);
+			}
 		}
 
 		[Theory]
@@ -150,20 +170,26 @@ namespace Realmar.Pipes.Tests.Integration
 		[InlineData(typeof(NonBlockingPipe<Derived>))]
 		public void Process_Variance(Type pipeType)
 		{
-			var pipe = CreatePipe<Derived>(pipeType);
-			pipe.FirstConnector
-				.Connect(new DebugProcessor<Base, Base>(x => x))
-				.Connect(new DebugProcessor<object, Derived>(x => x as Derived))
-				.Connect(new DebugProcessor<Base, object>(x => x))
-				.Finish(results =>
-				{
-					Assert.Equal(1, results.Count);
-					Assert.IsType<Derived>(results[0]);
-				});
+			using (var waitHandle = new AutoResetEvent(false))
+			{
+				var pipe = CreatePipe<Derived>(pipeType);
+				pipe.FirstConnector
+					.Connect(new DebugProcessor<Base, Base>(x => x))
+					.Connect(new DebugProcessor<object, Derived>(x => x as Derived))
+					.Connect(new DebugProcessor<Base, object>(x => x))
+					.Finish(results =>
+					{
+						Assert.Equal(1, results.Count);
+						Assert.IsType<Derived>(results[0]);
 
-			pipe.Process(new List<Derived> { new Derived() });
+						waitHandle.Set();
+					});
 
-			DisposePipe(pipe);
+				pipe.Process(new List<Derived> { new Derived() });
+
+				waitHandle.WaitOne();
+				DisposePipe(pipe);
+			}
 		}
 	}
 }
