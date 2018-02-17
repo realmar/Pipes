@@ -20,7 +20,7 @@ namespace Realmar.Pipes.Tests.Integration
 				pipe.FirstConnector
 					.Connect(new WaitProcessor<string>(500))
 					.Finish(x => waitHandle.Set());
-				pipe.Process(new List<string> { "A", "B" });
+				pipe.Process(new List<string> { "A" });
 
 				// Assert that waitHandle has not been set yet
 				Assert.False(waitHandle.WaitOne(0));
