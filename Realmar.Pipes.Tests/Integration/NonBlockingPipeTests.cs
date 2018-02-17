@@ -135,10 +135,10 @@ namespace Realmar.Pipes.Tests.Integration
 						Assert.EndsWith(appendStr, results[0]);
 					});
 
+				mathPipe.Process(new List<double> { 1, 2, 3, 4, 5, 6 });
+
 				// Same issue as above
 				Thread.Sleep(2000);
-
-				mathPipe.Process(new List<double> { 1, 2, 3, 4, 5, 6 });
 			}
 		}
 	}
