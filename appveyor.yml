@@ -14,4 +14,6 @@ build_script:
 
 test_script:
   - cmd: OpenCover.Console.exe -register:user -target:"dotnet.exe" -targetargs:"xunit" -filter:"+[*]* -[*.Tests]*" -output:"..\Realmar.Pipes_coverage.xml" -oldstyle
+
+after_test:
   - cmd: codecov -f "..\Realmar.Pipes_coverage.xml"
