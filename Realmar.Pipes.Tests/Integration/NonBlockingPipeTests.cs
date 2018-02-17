@@ -20,6 +20,7 @@ namespace Realmar.Pipes.Tests.Integration
 					.Finish(x => waitHandle.Set());
 				pipe.Process(new List<string> { "A", "B" });
 
+				// Assert that waitHandle has not been set yet
 				Assert.False(waitHandle.WaitOne(0));
 				waitHandle.WaitOne();
 			}
@@ -46,7 +47,18 @@ namespace Realmar.Pipes.Tests.Integration
 				pipe.Process(new List<int> { 2, 3 });
 				pipe.Process(new List<int> { 4, 5 });
 
-				Thread.Sleep(500);
+				/* I'm not sure how to do this better?
+				 * I need to wait for the pipe to process all data, however I cannot
+				 * be sure that the pipe even processes the data. (or processes the
+				 * data correctly) Therefore I cannot just use a WaitHandle and wait until
+				 * processedData contains 6 elements, as this may never happen.
+				 *
+				 * The problem is that when Thread.Sleep is given an in which is too small (eg. 500ms)
+				 * then the appveyor and travis CI will fail as the pipe has not finished the data and will
+				 * be Disposed while still needing to process data.
+				 * This does not seem to happen on my local machine as it is faster than then CI.
+				 */
+				Thread.Sleep(2000);
 
 				Assert.Equal(6, processedData.Count);
 
@@ -83,7 +95,8 @@ namespace Realmar.Pipes.Tests.Integration
 				pipe1.Process(new List<double> { 0, 1, 2, 3 });
 				pipe1.Process(new List<double> { 4, 5, 6, 7 });
 
-				Thread.Sleep(1000);
+				// Same here, I'm not sure how to do this better
+				Thread.Sleep(2000);
 
 				Assert.Equal(8, processedData.Count);
 				for (var i = 0; i < 8; i++)
