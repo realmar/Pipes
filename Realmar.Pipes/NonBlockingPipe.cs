@@ -47,6 +47,20 @@ namespace Realmar.Pipes
 			Dispose();
 		}
 
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			if (_isDisposed) return;
+
+			_stopProcessing = true;
+			_waitHandle.Set();
+
+			_waitHandle?.Dispose();
+			_isDisposed = true;
+		}
+
 		/// <inheritdoc />
 		/// <exception cref="ObjectDisposedException">The <see cref="M:System.Threading.WaitHandle.Close"></see> method was previously called on this <see cref="T:System.Threading.EventWaitHandle"></see>.</exception>
 		public override void Process(IList<TIn> data)
@@ -77,20 +91,6 @@ namespace Realmar.Pipes
 					_scheduledData.Clear();
 				}
 			}
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			if (_isDisposed) return;
-
-			_stopProcessing = true;
-			_waitHandle.Set();
-
-			_waitHandle?.Dispose();
-			_isDisposed = true;
 		}
 	}
 }
