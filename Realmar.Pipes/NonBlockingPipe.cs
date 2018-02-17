@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Realmar.Pipes.ProcessStrategies;
 
@@ -42,6 +43,7 @@ namespace Realmar.Pipes
 		/// </summary>
 		public NonBlockingPipe() : this(new ThreadPoolProcessStrategy()) { }
 
+		[ExcludeFromCodeCoverage]
 		~NonBlockingPipe()
 		{
 			Dispose();
