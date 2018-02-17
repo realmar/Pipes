@@ -9,13 +9,21 @@ namespace Realmar.Pipes
 	/// <inheritdoc />
 	public class Pipe<TIn> : IPipe<TIn>
 	{
+		/// <inheritdoc />
 		public IProcessorConnector<TIn> FirstConnector { get; }
+		/// <inheritdoc />
 		public Action<IList<object>> Callback { protected get; set; }
 
 		private readonly IProcessStrategy _processStrategy;
 		private IList<object> _results;
 		private readonly object _lock;
 
+		/// <summary>
+		/// Gets the process strategy.
+		/// </summary>
+		/// <value>
+		/// The process strategy.
+		/// </value>
 		protected IProcessStrategy ProcessStrategy => _processStrategy;
 
 		/// <summary>

@@ -43,7 +43,12 @@ namespace Realmar.Pipes
 		/// </summary>
 		public NonBlockingPipe() : this(new ThreadPoolProcessStrategy()) { }
 
+		/// <summary>
+		/// Finalizes an instance of the <see cref="NonBlockingPipe{TIn}"/> class.
+		/// </summary>
+#if DEBUG
 		[ExcludeFromCodeCoverage]
+#endif
 		~NonBlockingPipe()
 		{
 			Dispose();

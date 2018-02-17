@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-/// <summary>
-/// 
-/// </summary>
 namespace Realmar.Pipes.Connectors
 {
 	/// <summary>
