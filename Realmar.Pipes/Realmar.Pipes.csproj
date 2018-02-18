@@ -1,21 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net45;net40</TargetFrameworks>
+
     <DebugType>full</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NeutralLanguage>en</NeutralLanguage>
+
     <Authors>Anastassios martakos</Authors>
     <Product>Pipes</Product>
     <Copyright>Anastassios Martakos</Copyright>
-    <PackageLicenseUrl>https://github.com/realmar/Pipes/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/realmar/Pipes</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/realmar/Pipes</PackageProjectUrl>
-    <RepositoryType>git</RepositoryType>
-  </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="moq" Version="4.8.1" />
-  </ItemGroup>
+    <PackageLicenseUrl>https://github.com/realmar/Pipes/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/realmar/Pipes</PackageProjectUrl>
+
+    <RepositoryUrl>https://github.com/realmar/Pipes</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
 
 </Project>
