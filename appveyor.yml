@@ -32,9 +32,10 @@ after_test:
   - ps: codecov -f ".\Realmar.Pipes_coverage.xml"
 
 artifacts:
+  - path: .\Realmar.Pipes\bin\Release\*.nupkg
+    name: NuGet.File.Release
+
   - path: .\Realmar.Pipes\bin\$(configuration)\*.nupkg
-    name: NuGet.File
-  
   - path: .\Realmar.Pipes\bin\$(configuration)\**\*.dll
   - path: .\Realmar.Pipes\bin\$(configuration)\**\*.pdb
   - path: .\Realmar.Pipes\bin\$(configuration)\**\*.xml
@@ -44,7 +45,7 @@ deploy:
   api_key:
     secure: Dt0Cdhxr1YD5kwohkW9VMj0LGQj5dLT/hEEV8PRXyE3x5FcRxV01Urn8qsHo8mq5
   skip_symbols: false
-  artifact: NuGet.File
+  artifact: NuGet.File.Release
   configuration: Release
   on:
     appveyor_repo_tag: true
