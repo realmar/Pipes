@@ -1,24 +1,62 @@
 image: Visual Studio 2017
 
-version: 1.0.0-alpha+{build}-{branch}
-
-skip_tags: true
+version: 0.1.0+{build}-{branch}
 skip_branch_with_pr: false
+clone_depth: 1
+
+configuration:
+  - Debug
+  - Release
 
 init:
-  - cmd: git config --global core.autocrlf true
-  - cmd: dotnet --version
+  - ps: >-
+      git config --global core.autocrlf true
+      dotnet --version
 
 before_build:
-  - cmd: choco install -y opencover.portable
-  - cmd: choco install -y codecov
+  - ps: >-
+      choco install -y opencover.portable
+      choco install -y codecov
 
 build_script:
-  - cmd: cd ./Realmar.Pipes.Tests
-  - cmd: dotnet restore
+  - ps: >-
+      dotnet build -c $CONFIGURATION
+
+      #  tests assemblies
+      cd ./Realmar.Pipes.Tests
+      dotnet restore
 
 test_script:
-  - cmd: OpenCover.Console.exe -register:user -target:"dotnet.exe" -targetargs:"xunit" -filter:"+[*]* -[*.Tests]*" -output:"..\Realmar.Pipes_coverage.xml" -oldstyle -returntargetcode -excludebyattribute:*.ExcludeFromCodeCoverage*
+  - ps: >-
+      OpenCover.Console.exe
+        -register:user
+        -target:"dotnet.exe"
+        -targetargs:"xunit -c $CONFIGURATION"
+        -filter:"+[*]* -[*.Tests]*"
+        -output:"..\Realmar.Pipes_coverage.xml"
+        -oldstyle
+        -returntargetcode
+        -excludebyattribute:*.ExcludeFromCodeCoverage*
 
 after_test:
-  - cmd: codecov -f "..\Realmar.Pipes_coverage.xml"
+  - ps: >-
+      cd ..
+      codecov -f ".\Realmar.Pipes_coverage.xml"
+
+artifacts:
+  - path: .\Realmar.Pipes\bin\$(configuration)\*.nupkg
+    name: NuGet.File
+  
+  - path: .\Realmar.Pipes\bin\$(configuration)\**\*.dll
+  - path: .\Realmar.Pipes\bin\$(configuration)\**\*.pdb
+  - path: .\Realmar.Pipes\bin\$(configuration)\**\*.xml
+
+deploy:
+  provider: NuGet
+  api_key:
+    secure: Dt0Cdhxr1YD5kwohkW9VMj0LGQj5dLT/hEEV8PRXyE3x5FcRxV01Urn8qsHo8mq5
+  skip_symbols: false
+  artifact: NuGet.File
+  configuration: Release
+  on:
+    appveyor_repo_tag: true
