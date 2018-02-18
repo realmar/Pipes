@@ -1,29 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45;net40</TargetFrameworks>
+  <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <TargetFrameworks>netstandard2.0;net46;net461;net45;net452;net40</TargetFrameworks>
+  </PropertyGroup>
 
+  <PropertyGroup>
     <DebugType>full</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-
     <Authors>Anastassios martakos</Authors>
     <Product>Pipes</Product>
     <Copyright>Anastassios Martakos</Copyright>
-
     <PackageLicenseUrl>https://github.com/realmar/Pipes/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/realmar/Pipes</PackageProjectUrl>
-
     <RepositoryUrl>https://github.com/realmar/Pipes</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-
     <NeutralLanguage>en</NeutralLanguage>
-
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-
     <Version>0.1.0</Version>
-
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <PackageVersion>0.1.0</PackageVersion>
+    <FileVersion>0.1.0</FileVersion>
+    <InformationalVersion>0.1.0</InformationalVersion>
     <Description>Compose modular pipes to process data.</Description>
-
     <PackageTags>pipeline;pipe;assembly-line</PackageTags>
   </PropertyGroup>
 

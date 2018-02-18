@@ -8,40 +8,28 @@ configuration:
   - Debug
   - Release
 
+environment:
+  CONFIGURATION: $(configuration)
+
 init:
-  - ps: >-
-      git config --global core.autocrlf true
-      dotnet --version
+  - ps: git config --global core.autocrlf true
+  - ps: dotnet --version
 
 before_build:
-  - ps: >-
-      choco install -y opencover.portable
-      choco install -y codecov
+  - cmd: choco install -y opencover.portable
+  - cmd: choco install -y codecov
 
 build_script:
-  - ps: >-
-      dotnet build -c $CONFIGURATION
-
-      #  tests assemblies
-      cd ./Realmar.Pipes.Tests
-      dotnet restore
+  - ps: dotnet build -c $env:Configuration
+  - ps: cd ./Realmar.Pipes.Tests
+  - ps: dotnet restore
 
 test_script:
-  - ps: >-
-      OpenCover.Console.exe
-        -register:user
-        -target:"dotnet.exe"
-        -targetargs:"xunit -c $CONFIGURATION"
-        -filter:"+[*]* -[*.Tests]*"
-        -output:"..\Realmar.Pipes_coverage.xml"
-        -oldstyle
-        -returntargetcode
-        -excludebyattribute:*.ExcludeFromCodeCoverage*
+  - ps: OpenCover.Console.exe -register:user -target:"dotnet.exe" -targetargs:"xunit -c $env:Configuration" -filter:"+[*]* -[*.Tests]*" -output:"..\Realmar.Pipes_coverage.xml" -oldstyle -returntargetcode -excludebyattribute:*.ExcludeFromCodeCoverage*;
 
 after_test:
-  - ps: >-
-      cd ..
-      codecov -f ".\Realmar.Pipes_coverage.xml"
+  - ps: cd ..
+  - ps: codecov -f ".\Realmar.Pipes_coverage.xml"
 
 artifacts:
   - path: .\Realmar.Pipes\bin\$(configuration)\*.nupkg
