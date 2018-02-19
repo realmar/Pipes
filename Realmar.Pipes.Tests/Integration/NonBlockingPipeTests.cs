@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Realmar.Pipes.Connectors;
 using Realmar.Pipes.Processors.Misc;
@@ -33,6 +34,7 @@ namespace Realmar.Pipes.Tests.Integration
 		{
 			using (var pipe = new NonBlockingPipe<int>())
 			{
+				var totalReceivedData = 0;
 				var processedData = new List<int>();
 				var @lock = new object();
 
@@ -40,8 +42,12 @@ namespace Realmar.Pipes.Tests.Integration
 					.Connect(new DebugProcessor<int, int>(x => x))
 					.Finish(results =>
 					{
-						Assert.Equal(1, results.Count);
-						lock (@lock) processedData.AddRange(results);
+						Assert.InRange(results.Count, 1, 6);
+						lock (@lock)
+						{
+							totalReceivedData += results.Count;
+							processedData.AddRange(results);
+						}
 					});
 
 				pipe.Process(0);
@@ -62,6 +68,7 @@ namespace Realmar.Pipes.Tests.Integration
 				 */
 				Thread.Sleep(2000);
 
+				Assert.Equal(6, totalReceivedData);
 				Assert.Equal(6, processedData.Count);
 
 				for (var i = 0; i < 6; i++)
@@ -75,6 +82,12 @@ namespace Realmar.Pipes.Tests.Integration
 			using (var pipe1 = new NonBlockingPipe<double>())
 			using (var pipe2 = new NonBlockingPipe<double>())
 			{
+				var pipeCounterLock = new object();
+
+				var totalReceivedDataPipe1 = 0;
+				var totalReceivedDataPipe2 = 0;
+
+
 				var processedData = new List<double>();
 				var @lock = new object();
 
@@ -82,7 +95,8 @@ namespace Realmar.Pipes.Tests.Integration
 					.Connect(new MultiplicationProcessor(2))
 					.Finish(results =>
 					{
-						Assert.Equal(1, results.Count);
+						Assert.InRange(results.Count, 1, 8);
+						lock (pipeCounterLock) totalReceivedDataPipe1 += results.Count;
 						pipe2.Process(results);
 					});
 
@@ -90,7 +104,8 @@ namespace Realmar.Pipes.Tests.Integration
 					.Connect(new MultiplicationProcessor(2))
 					.Finish(results =>
 					{
-						Assert.Equal(1, results.Count);
+						Assert.InRange(results.Count, 1, 8);
+						lock (pipeCounterLock) totalReceivedDataPipe2 += results.Count;
 						lock (@lock) processedData.AddRange(results);
 					});
 
@@ -99,6 +114,9 @@ namespace Realmar.Pipes.Tests.Integration
 
 				// Same here, I'm not sure how to do this better
 				Thread.Sleep(2000);
+
+				Assert.Equal(8, totalReceivedDataPipe1);
+				Assert.Equal(8, totalReceivedDataPipe2);
 
 				Assert.Equal(8, processedData.Count);
 				for (var i = 0; i < 8; i++)
@@ -114,6 +132,9 @@ namespace Realmar.Pipes.Tests.Integration
 			{
 				var appendStr = " is your number!";
 
+				var totalReceivedDataStringPipe = 0;
+				var totalReceivedDataLock = new object();
+
 				var connector = new ConditionalPipeConnector<double>(mathPipe, stringPipe, x => x < 20);
 
 				mathPipe.FirstConnector
@@ -121,7 +142,7 @@ namespace Realmar.Pipes.Tests.Integration
 					.Connect(new MultiplicationProcessor(2))
 					.Finish(results =>
 					{
-						Assert.Equal(1, results.Count);
+						Assert.InRange(results.Count, 1, 6);
 						connector.Process(results);
 					});
 
@@ -131,7 +152,8 @@ namespace Realmar.Pipes.Tests.Integration
 					.Connect(new AppendStringProcessor(appendStr))
 					.Finish(results =>
 					{
-						Assert.Equal(1, results.Count);
+						lock (totalReceivedDataLock) totalReceivedDataStringPipe += results.Count;
+						Assert.InRange(results.Count, 1, 6);
 						Assert.EndsWith(appendStr, results[0]);
 					});
 
@@ -139,6 +161,8 @@ namespace Realmar.Pipes.Tests.Integration
 
 				// Same issue as above
 				Thread.Sleep(2000);
+
+				Assert.Equal(6, totalReceivedDataStringPipe);
 			}
 		}
 	}

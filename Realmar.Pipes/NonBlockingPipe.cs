@@ -19,9 +19,11 @@ namespace Realmar.Pipes
 		private Thread _workerThread;
 		private readonly EventWaitHandle _waitHandle;
 
-		private readonly List<TIn> _scheduledData;
+		private List<TIn> _scheduledData;
+		private List<object> _processedData;
 
-		private readonly object _addResultLock;
+		private readonly object _scheduledDataLock;
+		private readonly object _processedDataLock;
 		private bool _isDisposed;
 
 		/// <summary>
@@ -30,9 +32,14 @@ namespace Realmar.Pipes
 		/// <param name="strategy">The strategy used to process the data.</param>
 		public NonBlockingPipe(IProcessStrategy strategy) : base(strategy)
 		{
-			_addResultLock = new object();
+			_scheduledDataLock = new object();
+			_processedDataLock = new object();
+
 			_scheduledData = new List<TIn>();
+			_processedData = new List<object>();
+
 			_waitHandle = new AutoResetEvent(false);
+
 			_workerThread = new Thread(ThreadRunner);
 			_workerThread.Start();
 		}
@@ -72,14 +79,15 @@ namespace Realmar.Pipes
 		/// <exception cref="ObjectDisposedException">The <see cref="M:System.Threading.WaitHandle.Close"></see> method was previously called on this <see cref="T:System.Threading.EventWaitHandle"></see>.</exception>
 		public override void Process(IList<TIn> data)
 		{
-			lock (_addResultLock) _scheduledData.AddRange(data);
+			lock (_scheduledDataLock) _scheduledData.AddRange(data);
 			_waitHandle.Set();
 		}
 
 		/// <inheritdoc />
 		public override void AddResult(object result)
 		{
-			Callback.Invoke(new List<object> { result });
+			lock (_processedDataLock) _processedData.Add(result);
+			_waitHandle.Set();
 		}
 
 		/// <summary>
@@ -91,11 +99,24 @@ namespace Realmar.Pipes
 			{
 				_waitHandle.WaitOne();
 
-				if (_scheduledData.Count.Equals(0)) continue;
-				lock (_addResultLock)
+				if (!0.Equals(_processedData.Count))
 				{
-					ProcessStrategy.Process(FirstConnector, _scheduledData);
-					_scheduledData.Clear();
+					lock (_processedDataLock)
+					{
+						var data = _processedData;
+						ThreadPool.QueueUserWorkItem(obj => Callback.Invoke(new List<object>(data)));
+						_processedData = new List<object>();
+					}
+				}
+
+				if (!0.Equals(_scheduledData.Count))
+				{
+					lock (_scheduledDataLock)
+					{
+						var data = _scheduledData;
+						ProcessStrategy.Process(FirstConnector, data);
+						_scheduledData = new List<TIn>();
+					}
 				}
 			}
 		}
