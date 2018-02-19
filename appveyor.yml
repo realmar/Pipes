@@ -1,15 +1,12 @@
 image: Visual Studio 2017
 
-version: 0.1.0+{build}-{branch}
+version: 0.2.0+{build}-{branch}
 skip_branch_with_pr: false
 clone_depth: 1
 
 configuration:
   - Debug
   - Release
-
-environment:
-  CONFIGURATION: $(configuration)
 
 init:
   - ps: git config --global core.autocrlf true
@@ -32,8 +29,8 @@ after_test:
   - ps: codecov -f ".\Realmar.Pipes_coverage.xml"
 
 artifacts:
-  - path: .\Realmar.Pipes\bin\Release\*.nupkg
-    name: NuGet.File.Release
+  - path: .\Realmar.Pipes\bin\$(configuration)\*.nupkg
+    name: NuGet.File
 
   - path: .\Realmar.Pipes\bin\$(configuration)\*.nupkg
   - path: .\Realmar.Pipes\bin\$(configuration)\**\*.dll
@@ -45,7 +42,7 @@ deploy:
   api_key:
     secure: Dt0Cdhxr1YD5kwohkW9VMj0LGQj5dLT/hEEV8PRXyE3x5FcRxV01Urn8qsHo8mq5
   skip_symbols: false
-  artifact: NuGet.File.Release
-  configuration: Release
+  artifact: NuGet.File
   on:
+    configuration: Release
     appveyor_repo_tag: true
