@@ -36,7 +36,6 @@ namespace Realmar.Pipes.Tests.Integration
 					{
 						Assert.Equal(results[i], Math.Pow(data[i], exponent * exponent));
 					}
-
 				});
 
 			pipe.Process(data);

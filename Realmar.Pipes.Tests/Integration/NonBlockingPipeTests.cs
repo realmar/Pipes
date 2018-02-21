@@ -87,7 +87,6 @@ namespace Realmar.Pipes.Tests.Integration
 				var totalReceivedDataPipe1 = 0;
 				var totalReceivedDataPipe2 = 0;
 
-
 				var processedData = new List<double>();
 				var @lock = new object();
 
