@@ -9,13 +9,20 @@
 units called processors. Processors are statically typed, therefore the need
 to cast `object`s to their actual type disappears.
 
+```c#
+var pipe = new Pipe<double>();
+pipe.FirstConnector
+    .Connect(x => x * x)
+    .Connect(x => 8.Equals(x))
+    .Finish(VerifyCallback);
+```
+
 ## Getting Started
 
 ### Prerequisites
 
-Binaries currently target `netstandard2.0` ([.NET Core](https://dotnet.github.io/)
+This library  currently targets `netstandard2.0` ([.NET Core](https://dotnet.github.io/)
 2.0 or .NET Framework 4.6.1), `net461`, `net46`, `net452`, `net45` and `net40`.
-This means that you need one of the mentioned runtimes installed.
 
 Mono is not targeted yet.
 
@@ -44,9 +51,8 @@ has only prerelease versions. (0.y.z)
 This section describes the architecture of `Realmar.Pipes`.
 
 The idea is that a pipe is constructed using small reusable components
-called processors. Data is given to the pipe which then processes the data
-using the composed processors. This means that each processor is responsible to
-transform the inputted data into another form.
+called processors. Data is given to the pipe which then processes it
+using the composed processors.
 
 ```sh
            ┌─Pipe─────────────────────────────────┐
@@ -54,26 +60,42 @@ Input Data ⇒ [Processor]→[Processor]→[Processor] ⇒ Transformed Data
            └──────────────────────────────────────┘
 ```
 
-A processor is the smallest composable unit. A single processor is
-designed to do exactly one transformation on the input data.
-This results in processors being very modular. Processors must be composed
-using pipes. A pipe is the next bigger unit which combines multiple small
-processors to perform a more complex transformation on the input data.
+A processor is the smallest composable unit and is designed to do exactly
+one transformation on the data. This results in processors being very modular.
 
-It is advised to design pipes in a modular way so that a pipe may be reused
-on a later point.
-
-Pipes can be connected to each other. Either by trivially giving the
-transformed data to the next pipe or by using a more complex construct called
-a pipe connector. Given multiple pipes, a pipe connector may decide to
-which pipe it should give the data based on a predicate. Such a pipe
-connector is called 'ConditionalPipeConnector'.
+Pipes are the next bigger unit and can also be connected to each other.
+Either by trivially giving the transformed data to the next pipe or
+by using a more complex construct called a pipe connector.
+The 'ConditionalPipeConnector' is such a connector, which, based on a
+predicate, decides to which pipe it should give the processed data.
 
 ```sh
      ┌─Pipe─────────────────────┐ ┌─Connector─┐  True:  [ Pipe_True ]
 Data ⇒ [Processor]→[Processor]  ⇒ Predicate  ⇒
      └──────────────────────────┘ └───────────┘  False: [ Pipe_False ]
 ```
+
+### Simple Pipe
+
+Pipes can be easily composed using delegates:
+
+```c#
+var pipe = new Pipe<double>();
+pipe.FirstConnector
+    .Connect(x => x * 2)
+    .Connect(x => $"{x} is your number!")
+    .Connect(x => x.ToUpperInvariant())
+    .Finish(Console.WriteLine);
+
+pipe.Process(2);
+
+// prints:
+// 4 IS YOUR NUMBER!
+```
+
+Use delegates if the computations are simple. For actions which are
+more complex and may require state implement `IPipeProcessor` to create
+your own processor. This process will be described in the following sections.
 
 ### Processors
 
@@ -98,7 +120,7 @@ public class ParseStringProcessor<TOut> : IPipeProcessor<string, TOut>
 
 ### Pipes
 
-A pipe is responsible to combine multiple processors into one
+A pipe is responsible for combining multiple processors into one
 processing pipe line. Additionally, a pipe uses a processing strategy
 which defines how the data is processed. (later more)
 
@@ -289,12 +311,11 @@ var stringPipe = new Pipe<double>();
 var connector = new ConditionalPipeConnector<double>(mathPipe, stringPipe, x => x < 20);
 
 mathPipe.FirstConnector
-    .Connect(new MultiplicationProcessor(2))        // multiply with 2
+    .Connect(x => x * 2)
     .Finish(connector.Process);
 
 stringPipe.FirstConnector
-    .Connect(new ToStringProcessor<double>())
-    .Connect(new AppendStringProcessor("is your number!"))
+    .Connect(x => $"{x} is your number!")
     .Finish(results => Console.WriteLine);
 
 mathPipe.Process(new List<double> { 1, 2, 3, 4, 5, 6 });
