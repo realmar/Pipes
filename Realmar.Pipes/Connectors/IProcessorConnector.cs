@@ -21,6 +21,14 @@ namespace Realmar.Pipes.Connectors
 		IProcessorConnector<TOut> Connect<TOut>(IPipeProcessor<TIn, TOut> processor);
 
 		/// <summary>
+		/// Connects the specified delegate.
+		/// </summary>
+		/// <typeparam name="TOut">The type of the output data.</typeparam>
+		/// <param name="func">The delegate to connect.</param>
+		/// <returns>The next <see cref="IProcessorConnector{TIn}"/> in the chain.</returns>
+		IProcessorConnector<TOut> Connect<TOut>(Func<TIn, TOut> func);
+
+		/// <summary>
 		/// Finishes the chain of <see cref="IPipeProcessor{TIn,TOut}"/>s.
 		/// </summary>
 		/// <param name="callback">The callback to be executed when the data is processed.</param>

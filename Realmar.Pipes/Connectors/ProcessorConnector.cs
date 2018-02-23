@@ -22,13 +22,24 @@ namespace Realmar.Pipes.Connectors
 			_resultReceiver = resultReceiver;
 		}
 
+		private IProcessorConnector<TOut> ConnectDelegate<TOut>(Func<TIn, TOut> func)
+		{
+			var connector = new ProcessorConnector<TOut>(_resultReceiver);
+			_processDelegate = data => connector.Process(func(data));
+
+			return connector;
+		}
+
 		/// <inheritdoc />
 		public IProcessorConnector<TOut> Connect<TOut>(IPipeProcessor<TIn, TOut> processor)
 		{
-			var connector = new ProcessorConnector<TOut>(_resultReceiver);
-			_processDelegate = data => connector.Process(processor.Process(data));
+			return ConnectDelegate(processor.Process);
+		}
 
-			return connector;
+		/// <inheritdoc />
+		public IProcessorConnector<TOut> Connect<TOut>(Func<TIn, TOut> func)
+		{
+			return ConnectDelegate(func);
 		}
 
 		/// <inheritdoc />
