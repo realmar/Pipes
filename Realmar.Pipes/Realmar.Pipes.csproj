@@ -19,11 +19,11 @@
     <RepositoryType>git</RepositoryType>
     <NeutralLanguage>en</NeutralLanguage>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.2.0</Version>
-    <AssemblyVersion>0.2.0</AssemblyVersion>
-    <PackageVersion>0.2.0</PackageVersion>
-    <FileVersion>0.2.0</FileVersion>
-    <InformationalVersion>0.2.0</InformationalVersion>
+    <Version>0.3.0</Version>
+    <AssemblyVersion>0.3.0</AssemblyVersion>
+    <PackageVersion>0.3.0</PackageVersion>
+    <FileVersion>0.3.0</FileVersion>
+    <InformationalVersion>0.3.0</InformationalVersion>
     <Description>Compose modular pipes to process data.</Description>
     <PackageTags>pipeline;pipe;assembly-line</PackageTags>
   </PropertyGroup>
