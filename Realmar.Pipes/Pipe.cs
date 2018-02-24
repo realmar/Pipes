@@ -14,17 +14,15 @@ namespace Realmar.Pipes
 		/// <inheritdoc />
 		public Action<IList<object>> Callback { protected get; set; }
 
-		private readonly IProcessStrategy _processStrategy;
-		private IList<object> _results;
-		private readonly object _lock;
-
 		/// <summary>
 		/// Gets the process strategy.
 		/// </summary>
 		/// <value>
 		/// The process strategy.
 		/// </value>
-		protected IProcessStrategy ProcessStrategy => _processStrategy;
+		protected IProcessStrategy ProcessStrategy { get; }
+		private IList<object> _results;
+		private readonly object _lock;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Pipe{TIn}"/> class.
@@ -32,7 +30,7 @@ namespace Realmar.Pipes
 		/// <param name="strategy">The strategy used to process the data.</param>
 		public Pipe(IProcessStrategy strategy)
 		{
-			_processStrategy = strategy;
+			ProcessStrategy = strategy;
 			FirstConnector = new ProcessorConnector<TIn>(this);
 
 			_lock = new Mutex();
@@ -48,7 +46,7 @@ namespace Realmar.Pipes
 		/// <inheritdoc />
 		public virtual void Process(IList<TIn> data)
 		{
-			_processStrategy.Process(FirstConnector, data);
+			ProcessStrategy.Process(FirstConnector, data);
 
 			var results = _results;
 			_results = new List<object>();
