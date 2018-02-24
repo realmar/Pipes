@@ -17,7 +17,7 @@ namespace Realmar.Pipes.Tests.Unit.Processors.Misc
 			processor.Process(new object());
 			stopwatch.Stop();
 
-			Assert.InRange(stopwatch.Elapsed.TotalMilliseconds, waitTime, waitTime * 1.5);
+			Assert.True(stopwatch.Elapsed.TotalMilliseconds > waitTime);
 		}
 	}
 }
