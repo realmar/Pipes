@@ -113,8 +113,7 @@ namespace Realmar.Pipes
                 {
                     lock (_scheduledDataLock)
                     {
-                        var data = _scheduledData;
-                        ProcessStrategy.Process(FirstConnector, data);
+                        ProcessStrategy.Process(FirstConnector, _scheduledData);
                         _scheduledData = new List<TIn>();
                     }
                 }
