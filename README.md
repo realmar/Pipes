@@ -170,7 +170,8 @@ IPipeProcessor<in TIn, out TOut>
 ```
 
 This allows a processor to take input which is "less derived" than the output
-data of the previous processor:
+data of the previous processor: (_Note:_ `TOut` does not need to be covariant
+to achieve this behavior. The reason why `TOut` is covariant is convenience.)
 
 ```c#
 class Base { }
