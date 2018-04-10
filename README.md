@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/realmar/Pipes.svg?branch=master)](https://travis-ci.org/realmar/Pipes)
 [![codecov](https://codecov.io/gh/realmar/Pipes/branch/master/graph/badge.svg)](https://codecov.io/gh/realmar/Pipes)
 [![CodeFactor](https://www.codefactor.io/repository/github/realmar/pipes/badge)](https://www.codefactor.io/repository/github/realmar/pipes)
+[![NuGet](https://img.shields.io/nuget/dt/Realmar.Pipes.svg)](https://www.nuget.org/packages/Realmar.Pipes/)
 
 # Pipes
 
