@@ -20,11 +20,11 @@
     <RepositoryUrl>https://github.com/realmar/Pipes</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <NeutralLanguage>English</NeutralLanguage>
-    <Version>0.3.0</Version>
-    <AssemblyVersion>0.3.0</AssemblyVersion>
-    <PackageVersion>0.3.0</PackageVersion>
-    <FileVersion>0.3.0</FileVersion>
-    <InformationalVersion>0.3.0</InformationalVersion>
+    <Version>0.3.1</Version>
+    <AssemblyVersion>0.3.1</AssemblyVersion>
+    <PackageVersion>0.3.1</PackageVersion>
+    <FileVersion>0.3.1</FileVersion>
+    <InformationalVersion>0.3.1</InformationalVersion>
     <Description>Compose modular pipes to process data</Description>
     <PackageTags>pipeline;pipe;assembly-line</PackageTags>
   </PropertyGroup>

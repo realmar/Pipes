@@ -11,6 +11,9 @@ namespace Realmar.Pipes.Processors.Misc
 	public class CastProcessor<T> : IPipeProcessor<object, T>
 	{
 		/// <inheritdoc />
+		/// <exception cref="InvalidCastException"></exception>
+		/// <exception cref="OverflowException"></exception>
+		/// <exception cref="FormatException"></exception>
 		public T Process(object data)
 		{
 			// check if data is boxed, if yes then we cannot cast it directly

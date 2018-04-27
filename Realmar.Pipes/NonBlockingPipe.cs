@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Realmar.Pipes.ProcessStrategies;
+
+#if DEBUG
+using System.Diagnostics.CodeAnalysis;
+#endif
 
 namespace Realmar.Pipes
 {
@@ -16,7 +19,7 @@ namespace Realmar.Pipes
 	public class NonBlockingPipe<TIn> : Pipe<TIn>, IDisposable
 	{
 		private volatile bool _stopProcessing;
-		private Thread _workerThread;
+		private readonly Thread _workerThread;
 		private readonly EventWaitHandle _waitHandle;
 
 		private List<TIn> _scheduledData;
@@ -30,6 +33,8 @@ namespace Realmar.Pipes
 		/// Initializes a new instance of the <see cref="NonBlockingPipe{TIn}"/> class.
 		/// </summary>
 		/// <param name="strategy">The strategy used to process the data.</param>
+		/// <exception cref="ThreadStateException">The thread has already been started.</exception>
+		/// <exception cref="OutOfMemoryException">There is not enough memory available to start this thread.</exception>
 		public NonBlockingPipe(IProcessStrategy strategy) : base(strategy)
 		{
 			_scheduledDataLock = new object();
@@ -48,6 +53,8 @@ namespace Realmar.Pipes
 		/// Initializes a new instance of the <see cref="Pipe{TIn}"/> class
 		/// using the <see cref="ThreadPoolProcessStrategy"/> strategy.
 		/// </summary>
+		/// <exception cref="ThreadStateException">The thread has already been started.</exception>
+		/// <exception cref="OutOfMemoryException">There is not enough memory available to start this thread.</exception>
 		public NonBlockingPipe() : this(new ThreadPoolProcessStrategy()) { }
 
 		/// <summary>

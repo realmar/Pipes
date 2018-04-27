@@ -48,9 +48,12 @@ namespace Realmar.Pipes
 		{
 			ProcessStrategy.Process(FirstConnector, data);
 
-			var results = _results;
-			_results = new List<object>();
-			Callback.Invoke(results);
+			lock (_lock)
+			{
+				var results = _results;
+				_results = new List<object>();
+				Callback.Invoke(results);
+			}
 		}
 
 		/// <summary>
