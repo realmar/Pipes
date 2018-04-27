@@ -34,9 +34,9 @@ namespace Realmar.Pipes.Tests.Unit.Pipes
 		}
 
 		[Fact]
-		public void Dispose_ThreadCreated()
+		public void Constructor_ThreadCreated()
 		{
-			Assert.Equal(ThreadState.WaitSleepJoin, PipeThread.ThreadState);
+			Assert.True(PipeThread.IsAlive);
 		}
 
 		[Fact]
@@ -47,6 +47,20 @@ namespace Realmar.Pipes.Tests.Unit.Pipes
 			// give thread time to terminate
 			Thread.Sleep(500);
 			Assert.Equal(ThreadState.Stopped, PipeThread.ThreadState);
+		}
+
+		[Fact]
+		public void Process_ThrowIfDisposed()
+		{
+			_pipe.Dispose();
+			Assert.Throws<ObjectDisposedException>(() => _pipe.Process(new object()));
+		}
+
+		[Fact]
+		public void AddResult_ThrowIfDisposed()
+		{
+			_pipe.Dispose();
+			Assert.Throws<ObjectDisposedException>(() => _pipe.AddResult(new object()));
 		}
 	}
 }
